@@ -57,7 +57,7 @@ The website is hosted on EC2 instances within a Virtual Private Cloud (VPC) conf
 
 - Navigate to the EC2 instances in the AWS Management Console.
 - Select your EC2 instance, click "Connect," and choose "Connect Using EC2 Instance Connect Endpoint."
-- Install and configure your website on the EC2 instance typing the following commands in your EC2 terminal:
+- Install and configure your website on the EC2 instance. In the in your EC2 terminal type the commands located in the "commands.txt" file
 
 
 ---
