@@ -57,6 +57,15 @@ The website is hosted on EC2 instances within a Virtual Private Cloud (VPC) conf
 
 - Navigate to the EC2 instances in the AWS Management Console.
 - Select your EC2 instance, click "Connect," and choose "Connect Using EC2 Instance Connect Endpoint."
+- Open your EC2 terminal.
+   - Navigate to the directory where the `commands.txt` file is located.
+   - Run the commands in the `commands.txt` file to complete the setup.
+   - **Note**: On line 50 of the `commands.txt` file, make sure to replace the placeholder with the actual name of the S3 bucket you created. The command should look like this:
+
+     ```bash
+     S3_BUCKET_NAME=<your-bucket-name>
+     ```
+
 
 
 ### 7. Register a Domain Name Server in Route 53
