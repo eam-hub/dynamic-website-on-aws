@@ -57,8 +57,26 @@ The website is hosted on EC2 instances within a Virtual Private Cloud (VPC) conf
 
 - Navigate to the EC2 instances in the AWS Management Console.
 - Select your EC2 instance, click "Connect," and choose "Connect Using EC2 Instance Connect Endpoint."
-- Install and configure your website on the EC2 instance. In the in your EC2 terminal type the commands located in the "commands.txt" file
 
+
+### 7. Register a Domain Name Server in Route 53
+
+   - Navigate to Route 53 in the AWS Management Console.
+   - Register a domain name (e.g., `emproject.com`). This typically costs around $12.00.
+   - Complete the registration process.
+   - Set up a Record Set in Route 53 to map your domain name to the website's IP address.
+   - Use AWS Certificate Manager (ACM) to request an SSL certificate. This ensures that the connection between users and your website is secure.
+
+### 8. HTTPS Listener
+
+  - Configure an HTTPS listener on the Application Load Balancer.
+  - This listener directs incoming requests to the appropriate targets (e.g., your EC2 instances) using secure HTTPS connections.
+
+### 9. Auto Scaling Group
+   - Create an Auto Scaling Group for fault tolerance and scalability.
+   - Set up an Amazon Machine Image (AMI) from your current EC2 instance where the application is deployed.
+   - Associate this AMI with a newly created Launch Template.
+   - Once the Auto Scaling Group is set up to dynamically create new instances based on the AMI, you can terminate the initial EC2 instance.
 
 ---
 
