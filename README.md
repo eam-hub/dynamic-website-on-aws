@@ -51,6 +51,25 @@ The website is hosted on EC2 instances within a Virtual Private Cloud (VPC) conf
 
 - Create an RDS instance for your database, ensuring to note the username and password.
 
+#### Steps to Upload SQL Data into the RDS Database
+Create an S3 Bucket:
+Set up an S3 bucket in AWS to store the SQL script file.
+Upload the SQL script file into the newly created S3 bucket.
+Create an IAM Role with S3 Access:
+
+Configure an IAM role with permissions to access the S3 bucket.
+Attach this IAM role to the EC2 instance to grant it access to the SQL script in the S3 bucket.
+Launch an EC2 Instance:
+
+Create an EC2 instance within the private application subnet of your network.
+Ensure that this instance is configured to use the IAM role created in the previous step.
+Download SQL Script and Migrate Data:
+
+On the EC2 instance, use the IAM role to download the SQL script from the S3 bucket.
+Use Flyway to apply the SQL script to the RDS database.
+
+Please see the 'flyway-migration.txt' file for the specific commands to run for migrating the file.
+
 ### 5. Application Load Balancer Setup
 
 - Launch an EC2 instance in the private subnet and add it to a newly created target group for your Application Load Balancer.
