@@ -94,7 +94,7 @@ Delete the instance once completed with this step.
 ### 7. Register a Domain Name Server in Route 53
 
    - Navigate to Route 53 in the AWS Management Console.
-   - Register a domain name (e.g., `emproject.com`). This typically costs around $12.00.
+   - Register a domain name (e.g., `eamfresh.com`). This typically costs around $12.00.
    - Complete the registration process.
    - Set up a Record Set in Route 53 to map your domain name to the website's IP address.
    - Use AWS Certificate Manager (ACM) to request an SSL certificate. This ensures that the connection between users and your website is secure.
