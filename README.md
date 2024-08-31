@@ -1,3 +1,6 @@
+![dyanmic website architecture](https://github.com/user-attachments/assets/b876e149-571c-43fd-9d8f-3198fc622618)
+
+
 # Dynamic Website Hosting on AWS
 
 This project demonstrates the deployment and hosting of a e-commerce website on AWS, leveraging various services and components to ensure high availability, scalability, security, and fault tolerance.
