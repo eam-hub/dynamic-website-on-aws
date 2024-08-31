@@ -69,6 +69,7 @@ On the EC2 instance, use the IAM role to download the SQL script from the S3 buc
 Use Flyway to apply the SQL script to the RDS database.
 
 Please see the 'flyway-migration.txt' file for the specific commands to run for migrating the file.
+Delete the instance once completed with this step.
 
 ### 5. Application Load Balancer Setup
 
