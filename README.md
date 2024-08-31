@@ -1,4 +1,4 @@
-# E-Commerce Website Hosting on AWS
+# Dynamic Website Hosting on AWS
 
 This project demonstrates the deployment and hosting of a e-commerce website on AWS, leveraging various services and components to ensure high availability, scalability, security, and fault tolerance.
 
