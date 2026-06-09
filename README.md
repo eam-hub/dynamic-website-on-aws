@@ -53,7 +53,7 @@ A custom VPC was configured with six subnets distributed across two Availability
 
 ### Security Groups
 
-Security groups were configured following the principle of least privilege:
+Security groups were configured for the following...
 
 #### Application Load Balancer
 
