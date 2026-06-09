@@ -74,6 +74,10 @@ Security groups were configured for the following...
 * MySQL access from the Web Server Security Group
 * MySQL access from the Database Migration Server Security Group
 
+#### EC2 Instance Connect Endpoint
+
+* SSH (TCP 22) to the VPC CIDR block
+  
 ### Secure Administrative Access
 
 Instead of using a bastion host, an EC2 Instance Connect Endpoint (EICE) was deployed within a private application subnet. This allowed secure SSH access to EC2 instances located in private subnets without exposing them to the public internet.
