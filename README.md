@@ -3,112 +3,154 @@
 
 # Dynamic Website Hosting on AWS
 
-This project demonstrates the deployment and hosting of a e-commerce website on AWS, leveraging various services and components to ensure high availability, scalability, security, and fault tolerance.
+## Overview
 
-## Architecture Overview
+This project demonstrates how to deploy a dynamic website on AWS using S3, VPC, RDS, EC2, and Application Load Balancer.
 
-The website is hosted on EC2 instances within a Virtual Private Cloud (VPC) configured with public and private subnets across two Availability Zones. The infrastructure leverages the following AWS resources:
+## Architecture
 
-- **Virtual Private Cloud (VPC):** A logically isolated section of the AWS cloud where AWS resources are launched.
-- **Internet Gateway:** Enables communication between the VPC instances and the internet.
-- **Security Groups:** Act as virtual firewalls to control inbound and outbound traffic.
-- **Availability Zones:** Used to increase reliability and fault tolerance by spanning resources across multiple zones.
-- **Public Subnets:** Host infrastructure components like the NAT Gateway and Application Load Balancer.
-- **Private Subnets:** Host the web servers (EC2 instances) for enhanced security.
-- **NAT Gateway:** Allows instances in private subnets to access the internet.
-- **EC2 Instance Connect Endpoint:** Enables secure connections to EC2 instances within both public and private subnets.
-- **Application Load Balancer (ALB):** Distributes incoming web traffic across multiple EC2 instances in an Auto Scaling group.
-- **Auto Scaling Group:** Automatically manages the EC2 instances hosting the website, ensuring availability, scalability, and fault tolerance.
-- **AWS Certificate Manager:** Secures application communications with SSL/TLS certificates.
-- **Simple Notification Service (SNS):** Sends notifications about activities within the Auto Scaling Group.
-- **Route 53:** Provides DNS services for registering and managing the website's domain name.
-- **S3 Bucket:** Stores the application code and assets.
+The application architecture consists of:
 
-## Deployment Instructions
+* Custom VPC spanning two Availability Zones
+* Public subnets hosting the Application Load Balancer and NAT Gateway
+* Private application subnets hosting EC2 web servers
+* Private database subnets hosting the MySQL RDS instance
+* Amazon S3 for application code storage
+* Route 53 for DNS management
+* AWS Certificate Manager (ACM) for SSL/TLS certificates
+* AWS Secrets Manager for database credential storage
+* Auto Scaling Group for high availability and scalability
 
-### 1. Install and Configure AWS CLI
+## AWS Services Used
 
-- Install the AWS CLI on your local machine.
-- Create an IAM user in the AWS Management Console and generate an access key and secret key.
-- Configure the IAM user keys on your local machine using the AWS CLI.
+* Amazon VPC
+* Amazon EC2
+* EC2 Instance Connect Endpoint (EICE)
+* Amazon S3
+* Amazon RDS (MySQL)
+* AWS Secrets Manager
+* AWS Identity and Access Management (IAM)
+* Application Load Balancer (ALB)
+* Auto Scaling Group (ASG)
+* Amazon Route 53
+* AWS Certificate Manager (ACM)
+* NAT Gateway
+* Internet Gateway
 
-### 2. S3 Bucket Setup
+## VPC and Networking
 
-- Create an S3 bucket in the AWS Management Console.
-- Upload your application code into the S3 bucket.
+A custom VPC was configured with six subnets distributed across two Availability Zones:
 
-### 3. VPC Configuration
+* 2 Public Subnets
+* 2 Private Application Subnets
+* 2 Private Database Subnets
 
-- Create a VPC and enable DNS hostname resolution.
-- Set up an Internet Gateway to allow resources inside the VPC to connect to the internet.
-- Create three subnets: one public subnet (for resources like the NAT Gateway and Application Load Balancer) and two private subnets (one for the application server and one for the database server). Use two different Availability Zones (e.g., us-east-1a and us-east-1b) for fault tolerance.
-- Enable auto-assigned public IPs for the public subnet and configure the associated route table to make it public.
-- Create a NAT Gateway in the public subnet to allow instances in private subnets to connect to the internet.
-- Create security groups and attach them to the Application Load Balancer, EC2 Instance Connect Endpoint, database server, and application server.
-- Set up an EC2 Instance Connect Endpoint in the private subnet (us-east-1b). Test the connection by creating a test EC2 instance and accessing it through the EC2 Instance Connect Endpoint.
+### Internet Access
 
-### 4. RDS Configuration
+* An Internet Gateway was attached to the VPC.
+* Public route tables were configured to route internet-bound traffic through the Internet Gateway.
+* A NAT Gateway with an Elastic IP address was deployed in a public subnet to provide outbound internet access for resources located in private subnets.
 
-- Create an RDS instance for your database, ensuring to note the username and password.
+### Security Groups
 
-#### Steps to Upload SQL Data into the RDS Database
-Create an S3 Bucket:
-Set up an S3 bucket in AWS to store the SQL script file.
-Upload the SQL script file into the newly created S3 bucket.
-Create an IAM Role with S3 Access:
+Security groups were configured following the principle of least privilege:
 
-Configure an IAM role with permissions to access the S3 bucket.
-Attach this IAM role to the EC2 instance to grant it access to the SQL script in the S3 bucket.
-Launch an EC2 Instance:
+#### Application Load Balancer
 
-Create an EC2 instance within the private application subnet of your network.
-Ensure that this instance is configured to use the IAM role created in the previous step.
-Download SQL Script and Migrate Data:
+* HTTP (80) from anywhere
+* HTTPS (443) from anywhere
 
-On the EC2 instance, use the IAM role to download the SQL script from the S3 bucket.
-Use Flyway to apply the SQL script to the RDS database.
+#### Web Servers
 
-Please see the 'flyway-migration.txt' file for the specific commands to run for migrating the file.
-Delete the instance once completed with this step.
+* HTTP/HTTPS from the ALB Security Group
+* SSH access from the EC2 Instance Connect Endpoint Security Group
 
-### 5. Application Load Balancer Setup
+#### Database Migration Server
 
-- Launch an EC2 instance in the private subnet and add it to a newly created target group for your Application Load Balancer.
-- Create an Application Load Balancer to route incoming traffic to the EC2 instances in the target group (private subnet).
+* SSH access from the EC2 Instance Connect Endpoint Security Group
 
-### 6. Install Website on EC2 Instance
+#### Amazon RDS
 
-- Navigate to the EC2 instances in the AWS Management Console.
-- Select your EC2 instance, click "Connect," and choose "Connect Using EC2 Instance Connect Endpoint."
-- Open your EC2 terminal.
-   - Navigate to the directory where the `commands.txt` file is located.
-   - Run the commands in the `commands.txt` file to complete the setup.
-   - **Note**: On line 50 of the `commands.txt` file, make sure to replace the placeholder with the actual name of the S3 bucket you created. The command should look like this:
+* MySQL access from the Web Server Security Group
+* MySQL access from the Database Migration Server Security Group
 
-     ```bash
-     S3_BUCKET_NAME=<your-bucket-name>
-     ```
+### Secure Administrative Access
 
+Instead of using a bastion host, an EC2 Instance Connect Endpoint (EICE) was deployed within a private application subnet. This allowed secure SSH access to EC2 instances located in private subnets without exposing them to the public internet.
 
+## Application Code Storage
 
-### 7. Register a Domain Name Server in Route 53
+Application source code was stored in an Amazon S3 bucket. During deployment, EC2 instances retrieved the application files directly from S3, enabling centralized code management and simplified deployments.
 
-   - Navigate to Route 53 in the AWS Management Console.
-   - Register a domain name (e.g., `eamfresh.com`). This typically costs around $12.00.
-   - Complete the registration process.
-   - Set up a Record Set in Route 53 to map your domain name to the website's IP address.
-   - Use AWS Certificate Manager (ACM) to request an SSL certificate. This ensures that the connection between users and your website is secure.
+## IAM Configuration
 
-### 8. HTTPS Listener
+Custom IAM policies and roles were created to grant EC2 instances permission to:
 
-  - Configure an HTTPS listener on the Application Load Balancer.
-  - This listener directs incoming requests to the appropriate targets (e.g., your EC2 instances) using secure HTTPS connections.
+* Download application code from Amazon S3
+* Retrieve database credentials from AWS Secrets Manager
 
-### 9. Auto Scaling Group
-   - Create an Auto Scaling Group for fault tolerance and scalability.
-   - Set up an Amazon Machine Image (AMI) from your current EC2 instance where the application is deployed.
-   - Associate this AMI with a newly created Launch Template.
-   - Once the Auto Scaling Group is set up to dynamically create new instances based on the AMI, you can terminate the initial EC2 instance.
+This approach eliminated the need to hardcode credentials within the application or deployment scripts.
 
----
+## Domain Registration and SSL
+
+A custom domain name was registered using Amazon Route 53.
+
+To secure traffic between users and the application:
+
+* An SSL/TLS certificate was requested through AWS Certificate Manager (ACM)
+* DNS validation records were automatically created in Route 53
+* The certificate was attached to the Application Load Balancer
+
+## Database Layer
+
+A DB Subnet Group was created using the private database subnets.
+
+An Amazon RDS MySQL database instance was deployed within the private database tier to provide persistent storage for the application.
+
+Database credentials were securely stored in AWS Secrets Manager and retrieved dynamically by the application during runtime.
+
+## Database Migration Server
+
+A dedicated EC2 instance was launched to perform database migration tasks.
+
+The migration server:
+
+* Resided within the private application tier
+* Retrieved database credentials from Secrets Manager
+* Executed migration scripts during deployment
+
+## Web Server Deployment
+
+Web servers were deployed on EC2 instances located in private application subnets.
+
+Deployment automation was implemented using EC2 User Data scripts, which:
+
+* Downloaded application code from Amazon S3
+* Retrieved database credentials from AWS Secrets Manager
+* Installed required dependencies
+* Configured the application environment
+
+## Load Balancing
+
+An Application Load Balancer was deployed across both public subnets.
+
+A Target Group was created and configured with the web server instances. The ALB distributed incoming traffic across healthy targets and terminated HTTPS connections using the ACM certificate.
+
+## DNS Configuration
+
+A Route 53 alias record was created to point the custom domain name to the Application Load Balancer endpoint.
+
+This enabled users to access the application using a friendly domain name over HTTPS.
+
+## High Availability and Auto Scaling
+
+To support scalability and fault tolerance:
+
+1. An Amazon Machine Image (AMI) was created from the configured web server.
+2. A Launch Template was created using the AMI.
+3. An Auto Scaling Group (ASG) was configured across multiple Availability Zones.
+4. The ASG was integrated with the Application Load Balancer Target Group.
+
+This configuration allows the environment to automatically launch replacement instances and scale based on application demand.
+
 
