@@ -84,11 +84,11 @@ Instead of using a bastion host, an EC2 Instance Connect Endpoint (EICE) was dep
 
 ## Application Code Storage
 
-Application source code was stored in an Amazon S3 bucket. During deployment, EC2 instances retrieved the application files directly from S3, enabling centralized code management and simplified deployments.
+Application source code was stored in an Amazon S3 bucket. During deployment, EC2 instances retrieved the application files directly from S3.
 
 ## IAM Configuration
 
-Custom IAM policies and roles were created to grant EC2 instances permission to:
+Custom IAM policies and IAM Roles were created to grant EC2 instances permission to:
 
 * Download application code from Amazon S3
 * Retrieve database credentials from AWS Secrets Manager
@@ -107,21 +107,21 @@ To secure traffic between users and the application:
 
 ## Database Layer
 
-A DB Subnet Group was created using the private database subnets.
+First, A DB Subnet Group was created using the private database subnets.
 
 An Amazon RDS MySQL database instance was deployed within the private database tier to provide persistent storage for the application.
 
-Database credentials were securely stored in AWS Secrets Manager and retrieved dynamically by the application during runtime.
+Database credentials were stored in AWS Secrets Manager and retrieved dynamically by the application during runtime.
 
 ## Database Migration Server
 
-A dedicated EC2 instance was launched to perform database migration tasks.
+An EC2 instance was launched to perform database migration tasks.
 
 The migration server:
 
 * Resided within the private application tier
 * Retrieved database credentials from Secrets Manager
-* Executed migration scripts during deployment
+* Executed migration scripts during deployment (Migration script was placed in user data section when creating the EC2)
 
 ## Web Server Deployment
 
@@ -131,14 +131,12 @@ Deployment automation was implemented using EC2 User Data scripts, which:
 
 * Downloaded application code from Amazon S3
 * Retrieved database credentials from AWS Secrets Manager
-* Installed required dependencies
-* Configured the application environment
 
 ## Load Balancing
 
 An Application Load Balancer was deployed across both public subnets.
 
-A Target Group was created and configured with the web server instances. The ALB distributed incoming traffic across healthy targets and terminated HTTPS connections using the ACM certificate.
+First, a Target Group was created and configured with the web server instances. Then the ALB was created. The ALB distributed incoming traffic across healthy targets 
 
 ## DNS Configuration
 
